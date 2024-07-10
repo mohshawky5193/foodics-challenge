@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: Foodics Coding Challenge
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/foodics
+    username: foodics
+    password: foodics
+  jpa:
+    generate-ddl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
