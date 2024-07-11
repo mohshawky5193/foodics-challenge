@@ -41,8 +41,13 @@ public class OrderService {
     List<Ingredient> ingredients = new ArrayList<>();
     productsOrdered.forEach(product -> product.getProductIngredients().forEach(productIngredient -> {
       Ingredient ingredient = productIngredient.getIngredient();
-      ingredient.setAmountInGrams(ingredient.getAmountInGrams()-productIngredient.getAmountInGrams()*productIdToQuantityMap.get(product.getId()));
+      int consumedAmount = ingredient.getConsumedAmountInGrams() == null ? 0:ingredient.getConsumedAmountInGrams();
       ingredients.add(ingredient);
+      if(consumedAmount < ingredient.getAmountInGrams()*0.5 && consumedAmount+productIdToQuantityMap.get(product.getId())*productIngredient.getAmountInGrams() > ingredient.getAmountInGrams()*0.5){
+        //TODO:send email for ingredients with level < 50%
+        System.out.println("Sending mail for ingredient "+ingredient.getName());
+      }
+      ingredient.setConsumedAmountInGrams(consumedAmount+productIngredient.getAmountInGrams()*productIdToQuantityMap.get(product.getId()));
     }));
     ingredientService.saveAllIngredients(ingredients);
 

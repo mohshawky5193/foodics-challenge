@@ -23,8 +23,10 @@ public class Ingredient {
   private String name;
 
   @Column(name="AMOUNT_IN_GRAMS")
-  @Min(value = 0)
   private Integer amountInGrams;
+
+  @Column(name="CONSUMED_AMOUNT_IN_GRAMS",columnDefinition = "int default 0")
+  private Integer consumedAmountInGrams;
 
   @OneToMany(mappedBy = "ingredient")
   private List<ProductIngredient> productIngredients;
@@ -60,5 +62,13 @@ public class Ingredient {
   public void setProductIngredients(
       List<ProductIngredient> productIngredients) {
     this.productIngredients = productIngredients;
+  }
+
+  public Integer getConsumedAmountInGrams() {
+    return consumedAmountInGrams;
+  }
+
+  public void setConsumedAmountInGrams(Integer consumedAmountInGrams) {
+    this.consumedAmountInGrams = consumedAmountInGrams;
   }
 }
