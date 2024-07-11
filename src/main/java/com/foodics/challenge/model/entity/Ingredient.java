@@ -1,4 +1,4 @@
-package com.foodics.challenge.model;
+package com.foodics.challenge.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import java.util.List;
 
 @Entity
@@ -22,6 +23,7 @@ public class Ingredient {
   private String name;
 
   @Column(name="AMOUNT_IN_GRAMS")
+  @Min(value = 0)
   private Integer amountInGrams;
 
   @OneToMany(mappedBy = "ingredient")

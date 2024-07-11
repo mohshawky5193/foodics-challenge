@@ -1,7 +1,7 @@
 package com.foodics.challenge.repository;
 
-import com.foodics.challenge.model.ProductIngredient;
-import com.foodics.challenge.model.ProductIngredientKey;
+import com.foodics.challenge.model.entity.ProductIngredient;
+import com.foodics.challenge.model.entity.ProductIngredientKey;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

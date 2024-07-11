@@ -1,18 +1,17 @@
-package com.foodics.challenge.model;
+package com.foodics.challenge.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
-public class OrderDetailsKey {
+public class ProductIngredientKey {
 
   @Column(name = "PRODUCT_ID")
   private Long productId;
 
-  @Column(name = "ORDER_ID")
-  private Long orderId;
-
+  @Column(name = "INGREDIENT_ID")
+  private Long ingredientId;
 
   public Long getProductId() {
     return productId;
@@ -22,12 +21,12 @@ public class OrderDetailsKey {
     this.productId = productId;
   }
 
-  public Long getOrderId() {
-    return orderId;
+  public Long getIngredientId() {
+    return ingredientId;
   }
 
-  public void setOrderId(Long orderId) {
-    this.orderId = orderId;
+  public void setIngredientId(Long ingredientId) {
+    this.ingredientId = ingredientId;
   }
 
   @Override
@@ -38,13 +37,13 @@ public class OrderDetailsKey {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    OrderDetailsKey that = (OrderDetailsKey) o;
-    return Objects.equals(productId, that.productId) && Objects.equals(orderId,
-        that.orderId);
+    ProductIngredientKey that = (ProductIngredientKey) o;
+    return Objects.equals(productId, that.productId) && Objects.equals(
+        ingredientId, that.ingredientId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(productId, orderId);
+    return Objects.hash(productId, ingredientId);
   }
 }

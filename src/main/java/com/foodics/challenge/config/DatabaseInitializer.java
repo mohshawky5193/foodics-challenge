@@ -1,17 +1,19 @@
 package com.foodics.challenge.config;
 
-import com.foodics.challenge.model.Ingredient;
-import com.foodics.challenge.model.Product;
-import com.foodics.challenge.model.ProductIngredient;
-import com.foodics.challenge.model.ProductIngredientKey;
+import com.foodics.challenge.model.entity.Ingredient;
+import com.foodics.challenge.model.entity.Product;
+import com.foodics.challenge.model.entity.ProductIngredient;
+import com.foodics.challenge.model.entity.ProductIngredientKey;
 import com.foodics.challenge.repository.IngredientRepository;
 import com.foodics.challenge.repository.ProductIngredientRepository;
 import com.foodics.challenge.repository.ProductRepository;
 import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional
 public class DatabaseInitializer implements CommandLineRunner {
 
   private final ProductRepository productRepository;
@@ -56,7 +58,6 @@ public class DatabaseInitializer implements CommandLineRunner {
 
     productIngredientRepository.saveAll(List.of(productIngredient1,productIngredient2,productIngredient3,productIngredient4,productIngredient5,productIngredient6));
 
-
   }
 
   private  Product createProduct(String name) {
@@ -88,5 +89,6 @@ public class DatabaseInitializer implements CommandLineRunner {
     productIngredientKey.setIngredientId(ingredientId);
     return productIngredientKey;
   }
+
 
 }

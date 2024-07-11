@@ -1,4 +1,4 @@
-package com.foodics.challenge.model;
+package com.foodics.challenge.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +9,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.util.List;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(name = "PRODUCT")
@@ -23,10 +25,11 @@ public class Product {
   private String name;
 
   @OneToMany(mappedBy = "product")
+  @Fetch(FetchMode.SUBSELECT)
   private List<ProductIngredient> productIngredients;
 
   @OneToMany(mappedBy = "product")
-  private List<OrderDetails> orderDetails;
+  private List<OrderDetail> orderDetails;
 
   public Long getId() {
     return id;
@@ -53,11 +56,11 @@ public class Product {
     this.productIngredients = productIngredients;
   }
 
-  public List<OrderDetails> getOrderDetails() {
+  public List<OrderDetail> getOrderDetails() {
     return orderDetails;
   }
 
-  public void setOrderDetails(List<OrderDetails> orderDetails) {
+  public void setOrderDetails(List<OrderDetail> orderDetails) {
     this.orderDetails = orderDetails;
   }
 }

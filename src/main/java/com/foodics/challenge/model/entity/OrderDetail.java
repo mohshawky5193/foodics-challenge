@@ -1,4 +1,4 @@
-package com.foodics.challenge.model;
+package com.foodics.challenge.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -8,7 +8,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 
 @Entity
-public class OrderDetails {
+public class OrderDetail {
 
   @EmbeddedId
   private OrderDetailsKey orderDetailsKey;

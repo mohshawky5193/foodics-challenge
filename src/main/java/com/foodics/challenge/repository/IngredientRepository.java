@@ -1,6 +1,6 @@
 package com.foodics.challenge.repository;
 
-import com.foodics.challenge.model.Ingredient;
+import com.foodics.challenge.model.entity.Ingredient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

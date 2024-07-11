@@ -1,5 +1,6 @@
-package com.foodics.challenge.model;
+package com.foodics.challenge.model.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,8 +23,8 @@ public class Order {
   @Column(name = "CREATED_AT")
   private LocalDateTime createdAt;
 
-  @OneToMany(mappedBy = "order")
-  private List<OrderDetails> orderDetails;
+  @OneToMany(mappedBy = "order",cascade = CascadeType.PERSIST)
+  private List<OrderDetail> orderDetails;
 
   public Long getId() {
     return id;
@@ -41,11 +42,11 @@ public class Order {
     this.createdAt = createdAt;
   }
 
-  public List<OrderDetails> getOrderDetails() {
+  public List<OrderDetail> getOrderDetails() {
     return orderDetails;
   }
 
-  public void setOrderDetails(List<OrderDetails> orderDetails) {
+  public void setOrderDetails(List<OrderDetail> orderDetails) {
     this.orderDetails = orderDetails;
   }
 
