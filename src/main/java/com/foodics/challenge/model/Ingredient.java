@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.util.List;
 
@@ -13,7 +14,8 @@ import java.util.List;
 @Table(name ="INGREDIENT")
 public class Ingredient {
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ingredientGen")
+  @SequenceGenerator(name = "ingredientGen", sequenceName = "ingredient_id_seq")
   private Long Id;
 
   @Column(name="NAME")

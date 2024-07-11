@@ -3,10 +3,16 @@ spring:
     name: Foodics Coding Challenge
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/foodics
+    url: jdbc:postgresql://localhost:5432/foodics?reWriteBatchedInserts=true
     username: foodics
     password: foodics
   jpa:
+    properties:
+      hibernate:
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 100
     generate-ddl: true
     show-sql: true
     hibernate:
