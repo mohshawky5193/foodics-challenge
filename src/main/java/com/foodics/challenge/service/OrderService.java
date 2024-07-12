@@ -19,7 +19,6 @@ import org.springframework.web.context.annotation.RequestScope;
 
 @Service
 @Transactional
-@RequestScope
 public class OrderService {
 
 

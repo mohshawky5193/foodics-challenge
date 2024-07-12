@@ -17,10 +17,6 @@ public class ProductService {
     this.productRepository = productRepository;
   }
 
-  public void saveAllProducts(List<Product> products){
-    productRepository.saveAll(products);
-  }
-
   public List<Product> getAllProductsByIdIn(List<Long> productIds){
     return productRepository.findByIdIn(productIds);
   }
