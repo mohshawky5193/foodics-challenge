@@ -4,8 +4,6 @@ spring:
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/foodics?reWriteBatchedInserts=true
-    username: foodics
-    password: foodics
   jpa:
     properties:
       hibernate:
@@ -17,3 +15,12 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
+  mail:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    host: smtp.gmail.com
+    port: 587

@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    username: ${YOUR_DB_USERNAME}
+    password: ${YOUR_DB_PASSWORD}
+  mail:
+    username: ${YOUR_GMAIL}
+    password: ${YOUR_GOOGLE_APP_PASSWORD}
