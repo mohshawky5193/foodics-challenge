@@ -58,6 +58,11 @@ The Java 21 side is already provisioned: `java -version` on this machine reports
   are recorded in Open questions, not fixed here — a migration whose diff also contains behaviour
   fixes cannot be reviewed as a migration.
 
+  **Amended during implementation.** A *third* pre-existing defect, not anticipated above, was
+  surfaced by validation step 3 and — by explicit decision — **is** fixed on this branch, in its own
+  commit. See the "Stock rejection fixed despite the out-of-scope rule" decision below. The two
+  composite-key defects remain out of scope and untouched.
+
 ## Decisions
 
 **Boot 4.0.x, not 3.5.x.** The intermediate step would be the cautious choice on a large codebase;
@@ -105,6 +110,24 @@ behind. Omitting the volume makes every start a genuinely empty database, which 
 wanted" — persisted data is precisely what would make this check meaningless. Testcontainers was also
 rejected, for now: it would bring PostgreSQL into `mvn test` and change what the suite requires, and
 this phase is not the place to alter the test setup.
+
+**Stock rejection fixed despite the out-of-scope rule.** *(Added during implementation, reversing the
+"pre-existing defects" exclusion for this one case.)* Validation step 3 failed: an order for 100
+burgers returned `200` and drove Onion to 2080g consumed against 1000g of stock. The cause is the
+`else if` at `IngredientService.java:39-43` — an ingredient that crosses the 50% threshold on the
+same order takes the alert branch, so the over-100% check is never evaluated. `IngredientService` is
+byte-for-byte unchanged on this branch, so the migration did not cause it; Phase 7's "no behavioural
+change" premise holds either way. It is fixed here anyway, in its own labelled commit, because it
+silently corrupts stock and contradicts a mission success criterion. The two checks are now
+independent, insufficiency evaluated first. Rejected: deferring to a later phase, which would have
+left a known data-integrity hole open for the sake of a clean diff.
+
+**A regression test for the rejection path, not just the fix.** The bug survived because nothing
+exercised a real rejection: `OrderControllerTest.postOrderWithException` mocks `OrderService` and
+injects the exception with `doThrow`, and `OrderServiceIntegrationTest` had no rejection case at all.
+`rejectOrderExceedingStock` closes that gap and was confirmed to fail against the pre-fix service
+("Expected InsufficientIngredientsException to be thrown, but nothing was thrown") and pass with it.
+It also asserts no alert email is sent, since the buggy path sent one.
 
 **Version pins dropped, both of them.** `postgresql` 42.7.3 (`pom.xml:42-46`) and
 `hibernate-validator` 8.0.1.Final (`pom.xml:54-58`) both become parent-managed —

@@ -36,10 +36,11 @@ public class IngredientService {
       int consumedAmount = ingredient.getConsumedAmountInGrams() == null ? 0:ingredient.getConsumedAmountInGrams();
       int calculatedConsumedAmount = consumedAmount+productIdToQuantityMap.get(product.getId())*productIngredient.getAmountInGrams();
       ingredients.add(ingredient);
+      if(calculatedConsumedAmount > ingredient.getAmountInGrams()){
+        throw new InsufficientIngredientsException();
+      }
       if(consumedAmount <= ingredient.getAmountInGrams()*0.5 &&  calculatedConsumedAmount> ingredient.getAmountInGrams()*0.5){
         ingredientsNearToGetOutOfStock.add(ingredient.getName());
-      }else if(calculatedConsumedAmount > ingredient.getAmountInGrams()){
-        throw new InsufficientIngredientsException();
       }
       ingredient.setConsumedAmountInGrams(consumedAmount+productIngredient.getAmountInGrams()*productIdToQuantityMap.get(product.getId()));
     }));

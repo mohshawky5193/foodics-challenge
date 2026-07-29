@@ -1,6 +1,7 @@
 package com.foodics.challenge.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.foodics.challenge.config.DatabaseInitializer;
+import com.foodics.challenge.exception.InsufficientIngredientsException;
 import com.foodics.challenge.model.entity.Ingredient;
 import com.foodics.challenge.model.request.OrderRequest;
 import com.foodics.challenge.repository.IngredientRepository;
@@ -70,6 +72,15 @@ public class OrderServiceIntegrationTest {
     List<Ingredient> ingredients = ingredientRepository.findAll();
 
     assertEquals(ingredients.stream().filter(ingredient -> ingredient.getConsumedAmountInGrams() != null).count(),3L);
+  }
+
+  @Test
+  void rejectOrderExceedingStock(){
+    OrderRequest orderRequest = OrderRequestUtils.orderRequestInsufficientIngredients();
+
+    assertThrows(InsufficientIngredientsException.class, () -> orderService.order(orderRequest));
+
+    verify(emailService,never()).sendEmail(anyString(),anyString(),anyString());
   }
 
   @Test
