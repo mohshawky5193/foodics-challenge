@@ -106,14 +106,14 @@ for this phase, as `requirements.md` intended.
 Kept last and separate, so a reviewer can read the migration without the refactor mixed in, and so a
 revert of the refactor does not revert the upgrade.
 
-- [ ] Convert `OrderRequest` to `record OrderRequest(List<ProductRequest> products)`
-- [ ] Convert `ProductRequest` to `record ProductRequest(Long productId, Integer quantity)`
-- [ ] Update `OrderService.java:37-38` to the record accessors — `ProductRequest::productId` and
+- [x] Convert `OrderRequest` to `record OrderRequest(List<ProductRequest> products)`
+- [x] Convert `ProductRequest` to `record ProductRequest(Long productId, Integer quantity)`
+- [x] Update `OrderService.java:37-38` to the record accessors — `ProductRequest::productId` and
       `productRequest.quantity()`
-- [ ] Rewrite the three fixtures in `OrderRequestUtils` to construct records instead of calling
+- [x] Rewrite the three fixtures in `OrderRequestUtils` to construct records instead of calling
       setters
-- [ ] Confirm Jackson 3 still binds the `POST /order` body — `OrderControllerTest.postOrder` is the
-      test that proves it
+- [x] Confirm Jackson 3 still binds the `POST /order` body — `OrderControllerTest.postOrder` is the
+      test that proves it — passes, no annotations needed on either record
 
 ## 6. Documentation
 

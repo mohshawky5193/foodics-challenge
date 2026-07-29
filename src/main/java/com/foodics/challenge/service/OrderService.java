@@ -33,8 +33,8 @@ public class OrderService {
   }
 
   public void order(OrderRequest orderRequest){
-    List<Long> productIds = orderRequest.getProducts().stream().map(ProductRequest::getProductId).toList();
-    Map<Long,Integer> productIdToQuantityMap = orderRequest.getProducts().stream().map(productRequest -> Map.entry(productRequest.getProductId(),productRequest.getQuantity())).collect(Collectors.toMap(
+    List<Long> productIds = orderRequest.products().stream().map(ProductRequest::productId).toList();
+    Map<Long,Integer> productIdToQuantityMap = orderRequest.products().stream().map(productRequest -> Map.entry(productRequest.productId(),productRequest.quantity())).collect(Collectors.toMap(
         Entry::getKey, Entry::getValue));
 
     List<Product> productsOrdered = productService.getAllProductsByIdIn(productIds);
