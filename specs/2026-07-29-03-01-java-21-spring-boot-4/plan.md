@@ -24,18 +24,26 @@ Java-21 failure and a Boot-4 failure cannot be confused.
 The pom-only step. No `src/` edits here; the build is expected to fail compilation at the end of this
 group, and group 3 is what makes it pass.
 
-- [ ] Resolve the current `spring-boot-starter-parent` 4.0.x release from Maven Central and set it at
-      `pom.xml:8`
-- [ ] Reconcile each starter against the Spring Boot 4.0 migration guide —
+
+- [x] Resolve the current `spring-boot-starter-parent` 4.0.x release from Maven Central and set it at
+      `pom.xml:8` — **superseded:** Maven Central showed 4.0.7 as the newest 4.0.x but 4.1.0 as the
+      current release. Asked, and **4.1.0** was chosen over following `4.0.x` literally.
+- [x] Reconcile each starter against the Spring Boot 4.0 migration guide —
       `spring-boot-starter-data-jpa`, `spring-boot-starter-web`, `spring-boot-starter-mail`,
       `spring-boot-starter-test` — and correct any coordinate Boot 4 renamed or split
-- [ ] Replace the direct `hibernate-validator` dependency (`pom.xml:54-58`) with
-      `spring-boot-starter-validation`, no version
-- [ ] Drop the explicit `<version>42.7.3</version>` from the `postgresql` dependency (`pom.xml:45`)
-- [ ] Confirm `mvn -version` runs 4.0.x under the wrapper's Maven 3.9.7; raise
+      — one rename: `spring-boot-starter-web` → `spring-boot-starter-webmvc`. `-data-jpa`, `-mail`,
+      and `-test` resolve unchanged.
+- [x] Replace the direct `hibernate-validator` dependency (`pom.xml:54-58`) with
+      `spring-boot-starter-validation`, no version — pulls `hibernate-validator:9.1.0.Final`
+- [x] Drop the explicit `<version>42.7.3</version>` from the `postgresql` dependency (`pom.xml:45`)
+      — parent now resolves it to 42.7.11
+- [x] Confirm `mvn -version` runs 4.0.x under the wrapper's Maven 3.9.7; raise
       `.mvn/wrapper/maven-wrapper.properties` only if it does not (Open question 3)
-- [ ] Run `mvn dependency:tree` and confirm Jackson 3 (`tools.jackson`), Hibernate 7, and Spring
-      Framework 7 are what resolved
+      — **answered:** `./mvnw clean compile` succeeds under 3.9.7. No raise needed.
+- [x] Run `mvn dependency:tree` and confirm Jackson 3 (`tools.jackson`), Hibernate 7, and Spring
+      Framework 7 are what resolved — `tools.jackson.core:jackson-databind:3.1.4`,
+      `hibernate-core:7.4.1.Final`, `spring-core:7.0.8`. Only `jackson-annotations:2.21` keeps the
+      `com.fasterxml.jackson.core` group, which the migration guide names as the documented exception.
 
 ## 3. Main source adaptation
 
