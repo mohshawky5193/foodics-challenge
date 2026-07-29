@@ -47,7 +47,11 @@ group, and group 3 is what makes it pass.
 
 ## 3. Main source adaptation
 
-*Depends on 2.*
+*Depends on 2, and — discovered during execution — on 4.*
+
+`spring-boot:run` forks the lifecycle through `test-compile`, so the boot check below could not run
+while the test sources were still broken. Groups 3 and 4 were swapped: 4 landed first, then this
+group's boot check. Every task in both groups still ran.
 
 - [ ] Fix any main-source compilation error the Boot 4 upgrade surfaces — removed or relocated Spring
       APIs across `OrderController`, `FoodicsChallengeControllerAdvice`, the four services, and
@@ -64,21 +68,32 @@ group, and group 3 is what makes it pass.
 
 ## 4. Test source adaptation
 
-*Depends on 3.*
+*Ran before group 3 — see the note there.* Originally *depends on 3.*
 
 Where Boot 4's removals actually bite. Each change is a substitution — no test's assertions change.
 
-- [ ] Replace `@MockBean` with `@MockitoBean` at `OrderControllerTest.java:31` and
+- [x] Replace `@MockBean` with `@MockitoBean` at `OrderControllerTest.java:31` and
       `OrderServiceIntegrationTest.java:33`, importing
       `org.springframework.test.context.bean.override.mockito.MockitoBean` in place of
       `org.springframework.boot.test.mock.mockito.MockBean`
-- [ ] Switch `OrderControllerTest.java:11` from `com.fasterxml.jackson.databind.ObjectMapper` to
+- [x] Switch `OrderControllerTest.java:11` from `com.fasterxml.jackson.databind.ObjectMapper` to
       `tools.jackson.databind.ObjectMapper`, keeping the autowired mapper at line 35
-- [ ] Remove the unused `org.mockito.Mockito.verify` and `ArgumentMatchers.eq` static imports at
+- [x] Remove the unused `org.mockito.Mockito.verify` and `ArgumentMatchers.eq` static imports at
       `OrderControllerTest.java:5-6`
-- [ ] Fix any remaining test compilation error from Boot 4's test-support changes, leaving
+- [x] Fix any remaining test compilation error from Boot 4's test-support changes, leaving
       `@WebMvcTest`, `@DataJpaTest`, `@Import`, and `@ActiveProfiles` semantics as they are
-- [ ] Confirm all five existing tests pass with unchanged assertions
+      — **larger than the plan expected.** `spring-boot-starter-test` no longer carries the slice
+      annotations: `org.springframework.boot.test.autoconfigure.web.servlet` and
+      `...autoconfigure.orm.jpa` are both gone. Per the migration guide's "list the starters of the
+      technologies under test", `spring-boot-starter-test` was replaced in `pom.xml` by
+      `spring-boot-starter-webmvc-test` and `spring-boot-starter-data-jpa-test`, and the annotations
+      re-imported from `org.springframework.boot.webmvc.test.autoconfigure` and
+      `org.springframework.boot.data.jpa.test.autoconfigure`. Annotation semantics unchanged.
+- [x] Confirm all five existing tests pass with unchanged assertions — 6/6 including `contextLoads`
+
+**Open question 2 answered here:** Hibernate 7.4.1 did *not* turn either composite-key defect into a
+hard failure — all three `OrderServiceIntegrationTest` cases pass untouched. Both stay out of scope
+for this phase, as `requirements.md` intended.
 
 ## 5. Records for the request models
 

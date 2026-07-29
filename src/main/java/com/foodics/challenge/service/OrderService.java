@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.annotation.RequestScope;
 
 @Service
 @Transactional
@@ -45,6 +44,7 @@ public class OrderService {
     Order order = createOrderWithOrderDetails(productsOrdered, productIdToQuantityMap);
 
     orderRepository.save(order);
+
 
 
 
