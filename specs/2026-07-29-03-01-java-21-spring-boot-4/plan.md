@@ -53,18 +53,22 @@ group, and group 3 is what makes it pass.
 while the test sources were still broken. Groups 3 and 4 were swapped: 4 landed first, then this
 group's boot check. Every task in both groups still ran.
 
-- [ ] Fix any main-source compilation error the Boot 4 upgrade surfaces — removed or relocated Spring
+- [x] Fix any main-source compilation error the Boot 4 upgrade surfaces — removed or relocated Spring
       APIs across `OrderController`, `FoodicsChallengeControllerAdvice`, the four services, and
-      `DatabaseInitializer`
-- [ ] Remove the unused `org.springframework.web.context.annotation.RequestScope` import at
+      `DatabaseInitializer` — **none.** Main sources compiled against Boot 4.1.0 unchanged.
+- [x] Remove the unused `org.springframework.web.context.annotation.RequestScope` import at
       `OrderService.java:18`
-- [ ] Remove the unused `jakarta.validation.constraints.Min` imports at `Ingredient.java:11` and
+- [x] Remove the unused `jakarta.validation.constraints.Min` imports at `Ingredient.java:11` and
       `ProductIngredient.java:9`
-- [ ] Start a throwaway PostgreSQL — `docker run --rm -d --name foodics-pg -e POSTGRES_USER=foodics
+- [x] Start a throwaway PostgreSQL — `docker run --rm -d --name foodics-pg -e POSTGRES_USER=foodics
       -e POSTGRES_PASSWORD=foodics -e POSTGRES_DB=foodics -p 5432:5432 postgres:17-alpine`, no volume —
       and point `application-dev.yaml` at it
-- [ ] Confirm `mvn spring-boot:run -Dspring-boot.run.profiles=dev` boots against that container and
+- [x] Confirm `mvn spring-boot:run -Dspring-boot.run.profiles=dev` boots against that container and
       `DatabaseInitializer` still seeds two products and four ingredients (see `validation.md` steps 0–1)
+      — banner `v4.1.0`, started in 3.854s, counts 2 and 4. Validation step 2 also passed: `200`/`true`
+      with Beef 300, Chicken 300, Cheese 120, Onion 80 consumed.
+
+**Validation step 3 failed here, on a pre-existing defect** — see group 3b.
 
 ## 4. Test source adaptation
 
