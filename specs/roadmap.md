@@ -110,11 +110,37 @@ every stock change.
 **Exit criteria.** `mvn clean verify` passes on a Java 21 JDK with no deprecation-removal errors, and the
 existing order, alerting, and rejection tests are green without behavioural change.
 
-## Phase 8 — Liquibase-managed schema
+## Phase 8 — Environment-variable configuration
+
+**Goal.** The application is configured entirely through environment variables, with no per-profile YAML
+file and nothing environment-specific committed to the repository.
+
+*Depends on Phase 7.*
+
+- [ ] `application-dev.yaml.example` and the gitignored `application-dev.yaml` it templates removed
+- [ ] `application-test.yaml` removed; the `test` profile stops owning its own YAML file
+- [ ] `application.yaml` made the single Spring configuration file, with every environment-specific value —
+      datasource URL, datasource credentials, mail host/credentials — read from an environment variable via
+      `${VAR_NAME}` placeholders; local-friendly values (e.g. the H2 URL for tests) get an inline default,
+      credentials do not
+- [ ] Test configuration supplied as environment variables for the test run (Surefire/Failsafe `<environmentVariables>`
+      in `pom.xml`, or equivalent), so `mvn test` needs no YAML profile to run against H2
+- [ ] `spring.profiles.active` usage reconsidered now that dev and test no longer carry their own YAML —
+      dropped if nothing remains profile-specific, kept only if it still selects real behavioural differences
+- [ ] `.gitignore` entry for `application-dev.yaml` removed since the file no longer exists
+- [ ] README's configuration section rewritten to list the required environment variables and how to set
+      them (shell export, `.env` file, IDE run configuration) instead of pointing at copying an example YAML
+
+**Exit criteria.** No `application-dev.yaml.example` or profile-specific YAML remains under
+`src/main/resources` or `src/test/resources`; `mvn clean verify` passes and the application starts using
+only environment variables for datasource and mail configuration; the README alone is enough to configure
+and run the app in a fresh environment.
+
+## Phase 9 — Liquibase-managed schema
 
 **Goal.** The schema is versioned and reviewable instead of being inferred from entities at startup.
 
-*Depends on Phase 7.*
+*Depends on Phase 8.*
 
 - [ ] `liquibase-core` added and `spring.liquibase` configured
 - [ ] `db/changelog/db.changelog-master.yaml` plus one changelog per change, starting with a baseline
@@ -128,11 +154,11 @@ existing order, alerting, and rejection tests are green without behavioural chan
 **Exit criteria.** A fresh database is built entirely by Liquibase, a second start is a no-op, `validate`
 finds no drift, and `mvn test` passes against the migrated H2 schema.
 
-## Phase 9 — Restaurants, suppliers, and accounts
+## Phase 10 — Restaurants, suppliers, and accounts
 
 **Goal.** The domain knows who owns a menu, who supplies an ingredient, and who is ordering.
 
-*Depends on Phase 8.*
+*Depends on Phase 9.*
 
 - [ ] `Restaurant` entity; `Product` gains a `restaurant` reference and a `price`, so a product belongs to
       exactly one menu
@@ -146,11 +172,11 @@ finds no drift, and `mvn test` passes against the migrated H2 schema.
 **Exit criteria.** The seeded data resolves to one restaurant owning both products, suppliers attached to all
 four ingredients, and one user per role; existing order tests still pass.
 
-## Phase 10 — JWT authentication
+## Phase 11 — JWT authentication
 
 **Goal.** A caller can prove who they are.
 
-*Depends on Phase 9.*
+*Depends on Phase 10.*
 
 - [ ] `spring-boot-starter-security` and `spring-boot-starter-oauth2-resource-server` added
 - [ ] `POST /auth/login` taking email and password, returning a signed JWT carrying the subject and role
@@ -163,11 +189,11 @@ four ingredients, and one user per role; existing order tests still pass.
 **Exit criteria.** Valid credentials return a token that a protected endpoint accepts; a wrong password, a
 tampered signature, and an expired token are each rejected with `401`, covered by tests.
 
-## Phase 11 — Role-based authorization
+## Phase 12 — Role-based authorization
 
 **Goal.** Every endpoint is reachable only by the roles that should reach it, and only for their own data.
 
-*Depends on Phase 10.*
+*Depends on Phase 11.*
 
 - [ ] Endpoints locked down by default — anything not explicitly permitted requires authentication
 - [ ] `POST /order` restricted to `CUSTOMER`, with the order attributed to the authenticated user
@@ -183,11 +209,11 @@ tampered signature, and an expired token are each rejected with `401`, covered b
 **Exit criteria.** A test per role proves both the allowed call succeeds and the forbidden one returns `403`,
 including the cross-tenant case where the role is right and the owner is wrong.
 
-## Phase 12 — Supplier low-stock notifications
+## Phase 13 — Supplier low-stock notifications
 
 **Goal.** The alert reaches the supplier who can actually restock the ingredient.
 
-*Depends on Phase 11.*
+*Depends on Phase 12.*
 
 - [ ] 50%-threshold detection reused, but the recipient resolved from `Ingredient.supplier` instead of the
       hard-coded constant
@@ -200,11 +226,11 @@ including the cross-tenant case where the role is right and the owner is wrong.
 **Exit criteria.** An order depleting ingredients from two suppliers sends exactly two emails, each listing
 only that supplier's ingredients, and a second order past the same threshold sends none.
 
-## Phase 13 — Restaurant menu endpoint
+## Phase 14 — Restaurant menu endpoint
 
 **Goal.** A client can read what a restaurant sells before ordering it.
 
-*Depends on Phase 12.*
+*Depends on Phase 13.*
 
 - [ ] `GET /restaurants/{restaurantId}/menu` returning the restaurant's products with id, name, and price
 - [ ] Availability per item, derived from whether the recipe can still be covered by remaining ingredient
@@ -221,28 +247,32 @@ only that supplier's ingredients, and a second order past the same threshold sen
 unavailable once its ingredients cannot cover one unit, and the response is produced without a query per
 product.
 
-## Phase 14 — Email delivery off a personal account
+## Phase 15 — Email delivery off a personal account
 
 **Goal.** Alerts leave the application without anyone lending it a Gmail app password.
 
-*Depends on Phase 12.*
+*Depends on Phase 13.*
 
 The alternatives were surveyed in July 2026: Amazon SES ($0.10/1,000, cheapest at scale, most setup),
-Postmark (from ~$15/mo, best deliverability), Resend (3,000/mo free, ~$20 for 50k), Mailgun (~$15–90/mo,
-EU/US data residency), and SendGrid (~$19.95–89.95/mo, no free tier since May 2025). This is a coding
-challenge rather than a running business, so cost outweighs deliverability and scale: **Resend's free
-tier** is the choice, and the paid options stay on the record only in case the project ever becomes real.
+Postmark (from ~$15/mo, best deliverability), Resend (3,000/mo free, ~$20 for 50k), Brevo (300/day,
+~9,000/mo free forever, offers a plain SMTP relay alongside its API), Mailgun (~$15–90/mo, EU/US data
+residency), and SendGrid (~$19.95–89.95/mo, no free tier since May 2025). This is a coding challenge
+rather than a running business, so cost outweighs deliverability and scale: **Resend's free tier** is the
+primary choice for the API adapter, and **Brevo's free SMTP relay** replaces Gmail as the fallback — both
+free indefinitely at this project's volume — with the paid options staying on the record only in case the
+project ever becomes real.
 
 - [ ] `EmailSender` port extracted from `EmailService`, so the transport is one implementation behind an
       interface rather than `JavaMailSender` reaching through the service
 - [ ] Resend adapter over `com.resend:resend-java`, sending from a verified domain or Resend's test
       sender, with the API key supplied as configuration and kept uncommitted like the SMTP credentials
-- [ ] SMTP adapter kept as the fallback, selected by profile — the existing Gmail path must keep working
-      for anyone who would rather not create an account
+- [ ] SMTP adapter kept as the fallback, selected by profile, but repointed from Gmail to Brevo's free SMTP
+      relay (300 emails/day, no card required) — so even the fallback path no longer depends on anyone's
+      personal Gmail app password; host, port, and the Brevo SMTP credentials become configuration
 - [ ] Local development pointed at a mail catcher (Mailpit) so nothing leaves the machine
 - [ ] Tests pointed at an in-memory SMTP server (GreenMail) or a stubbed `EmailSender`, so the suite
       neither reaches the network nor needs an API key
-- [ ] `MERCHANT_EMAIL`'s replacement from Phase 12 unaffected; recipients still come from the supplier
+- [ ] `MERCHANT_EMAIL`'s replacement from Phase 13 unaffected; recipients still come from the supplier
 
 **Deliberately not in this phase.** Delivery stays `@Async` fire-and-forget. No outbox table, no retry, no
 broker. A send that fails is logged and lost, and that is accepted: the surveyed alternative — writing the
@@ -251,5 +281,5 @@ and costs a table, a relay job, and idempotency handling. Revisit only if the se
 orders.
 
 **Exit criteria.** An alert sends through Resend with no Gmail credentials configured, the SMTP profile
-still sends the same message unchanged, and `mvn test` passes with no network access and no API key
-present.
+sends the same message unchanged through Brevo's relay instead of Gmail, and `mvn test` passes with no
+network access and no API key present.
