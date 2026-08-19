@@ -22,12 +22,14 @@
 
 ## Merge criteria
 
-- [ ] `mvn clean verify` passes on Java 21
-- [ ] No `application-dev.yaml.example` or profile-specific YAML remains under `src/main/resources` or
+- [x] `mvn clean verify` passes on Java 21
+- [x] No `application-dev.yaml.example` or profile-specific YAML remains under `src/main/resources` or
       `src/test/resources`
-- [ ] Application starts using only environment variables for datasource and mail configuration
-- [ ] README alone is enough to configure and run the app in a fresh environment
-- [ ] `.gitignore` no longer references `application-dev.yaml`
+- [x] Application starts using only environment variables for datasource and mail configuration
+      (verified via `mvn clean verify`, which boots the full `@SpringBootTest` context off Surefire's
+      injected env vars alone; manual Postgres/no-env-var boot checks are unrun — see Validation → Manual)
+- [x] README alone is enough to configure and run the app in a fresh environment
+- [x] `.gitignore` no longer references `application-dev.yaml`
 
 ## Rollback
 

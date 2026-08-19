@@ -25,16 +25,16 @@
 
 ## 4. Update docs
 *Depends on 1, 2, 3.*
-- [ ] Rewrite README's "How to run" section: list the required environment variables
+- [x] Rewrite README's "How to run" section: list the required environment variables
       (`DB_DRIVER_CLASS_NAME`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `MAIL_HOST`, `MAIL_PORT`,
       `MAIL_USERNAME`, `MAIL_PASSWORD`), note which have local-friendly defaults (H2, Gmail host/port)
       and which don't (all four credentials), and show how to set them (shell `export`, a `.env` file
       loaded by the shell, or an IDE run configuration) instead of copying an example YAML
-  - [ ] Drop the `-Dspring-boot.run.profiles=dev` instruction and the "Assumptions" bullet that no
-      longer applies (none currently reference the profile, but re-check while editing)
+  - [x] Drop the `-Dspring-boot.run.profiles=dev` instruction (no other profile references existed to
+      re-check); also corrected the stale "Java 17" tech-stack line to "Java 21" while touching the file
 
 ## 5. Verify
 *Depends on 1-4.*
-- [ ] `mvn clean verify` passes with no env vars set beyond what Surefire injects
-- [ ] Confirm no file matching `application-dev.yaml*` or `application-test.yaml` remains under
+- [x] `mvn clean verify` passes with no env vars set beyond what Surefire injects
+- [x] Confirm no file matching `application-dev.yaml*` or `application-test.yaml` remains under
       `src/main/resources` or `src/test/resources`
