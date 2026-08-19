@@ -2,8 +2,10 @@ spring:
   application:
     name: Foodics Coding Challenge
   datasource:
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/foodics?reWriteBatchedInserts=true
+    driverClassName: ${DB_DRIVER_CLASS_NAME:org.h2.Driver}
+    url: ${DB_URL:jdbc:h2:mem:testdb}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     properties:
       hibernate:
@@ -22,5 +24,7 @@ spring:
           auth: true
           starttls:
             enable: true
-    host: smtp.gmail.com
-    port: 587
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}

@@ -80,6 +80,20 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<environmentVariables>
+						<DB_DRIVER_CLASS_NAME>org.h2.Driver</DB_DRIVER_CLASS_NAME>
+						<DB_URL>jdbc:h2:mem:testdb</DB_URL>
+						<DB_USERNAME>sa</DB_USERNAME>
+						<DB_PASSWORD></DB_PASSWORD>
+						<MAIL_USERNAME>test@example.com</MAIL_USERNAME>
+						<MAIL_PASSWORD>test-password</MAIL_PASSWORD>
+					</environmentVariables>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
