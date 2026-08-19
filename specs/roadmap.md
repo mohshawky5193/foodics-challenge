@@ -117,18 +117,18 @@ file and nothing environment-specific committed to the repository.
 
 *Depends on Phase 7.*
 
-- [ ] `application-dev.yaml.example` and the gitignored `application-dev.yaml` it templates removed
-- [ ] `application-test.yaml` removed; the `test` profile stops owning its own YAML file
-- [ ] `application.yaml` made the single Spring configuration file, with every environment-specific value —
+- [x] `application-dev.yaml.example` and the gitignored `application-dev.yaml` it templates removed
+- [x] `application-test.yaml` removed; the `test` profile stops owning its own YAML file
+- [x] `application.yaml` made the single Spring configuration file, with every environment-specific value —
       datasource URL, datasource credentials, mail host/credentials — read from an environment variable via
       `${VAR_NAME}` placeholders; local-friendly values (e.g. the H2 URL for tests) get an inline default,
       credentials do not
-- [ ] Test configuration supplied as environment variables for the test run (Surefire/Failsafe `<environmentVariables>`
+- [x] Test configuration supplied as environment variables for the test run (Surefire/Failsafe `<environmentVariables>`
       in `pom.xml`, or equivalent), so `mvn test` needs no YAML profile to run against H2
-- [ ] `spring.profiles.active` usage reconsidered now that dev and test no longer carry their own YAML —
+- [x] `spring.profiles.active` usage reconsidered now that dev and test no longer carry their own YAML —
       dropped if nothing remains profile-specific, kept only if it still selects real behavioural differences
-- [ ] `.gitignore` entry for `application-dev.yaml` removed since the file no longer exists
-- [ ] README's configuration section rewritten to list the required environment variables and how to set
+- [x] `.gitignore` entry for `application-dev.yaml` removed since the file no longer exists
+- [x] README's configuration section rewritten to list the required environment variables and how to set
       them (shell export, `.env` file, IDE run configuration) instead of pointing at copying an example YAML
 
 **Exit criteria.** No `application-dev.yaml.example` or profile-specific YAML remains under
