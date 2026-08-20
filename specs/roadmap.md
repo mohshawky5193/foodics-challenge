@@ -161,19 +161,19 @@ constructing `ResponseEntity` by hand.
 
 *Depends on Phase 9.*
 
-- [ ] Controller methods return their domain object directly (`OrderController.order` returns `Boolean`,
+- [x] Controller methods return their domain object directly (`OrderController.order` returns `Boolean`,
       not `ResponseEntity<Boolean>`); no `ResponseEntity` remains anywhere under `controller` or
       `controlleradvice`
-- [ ] `FoodicsChallengeControllerAdvice` becomes `@RestControllerAdvice`; its handlers use `@ResponseStatus`
+- [x] `FoodicsChallengeControllerAdvice` becomes `@RestControllerAdvice`; its handlers use `@ResponseStatus`
       and return the error payload directly instead of building a `ResponseEntity`
-- [ ] Every exception the API can currently produce gets its own handler and a stable numbered code —
+- [x] Every exception the API can currently produce gets its own handler and a stable numbered code —
       `InsufficientIngredientsException`, bean-validation failures, a malformed request body, a
       type-mismatched parameter, an unmapped route, an unsupported HTTP method, and an uncaught
       exception — numbered `E0001`…`E000N` in the order they're declared
-- [ ] A global `ResponseBodyAdvice<Object>` wraps every response body: success gets `code: "S000"` and the
+- [x] A global `ResponseBodyAdvice<Object>` wraps every response body: success gets `code: "S000"` and the
       original return value under `data`; an error gets its handler's `E000N` code and its message under
       `data`; both carry the HTTP status reason phrase (e.g. `"OK"`, `"Bad Request"`) alongside `code`
-- [ ] Existing controller/integration tests updated for the new envelope shape; new tests cover a success
+- [x] Existing controller/integration tests updated for the new envelope shape; new tests cover a success
       response and at least one of each numbered error
 
 **Exit criteria.** `POST /order` returns `{"code":"S000","status":"OK","data":true}` on success; each
