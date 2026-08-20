@@ -3,6 +3,7 @@ package com.foodics.challenge.controlleradvice;
 import com.foodics.challenge.exception.ErrorCode;
 import com.foodics.challenge.model.response.ApiError;
 import com.foodics.challenge.model.response.ApiResponse;
+import com.foodics.challenge.model.response.PagedResult;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,12 +33,15 @@ public class ApiResponseBodyAdvice implements ResponseBodyAdvice<Object> {
     String status = HttpStatus.valueOf(statusCode).getReasonPhrase();
 
     if (body instanceof ApiError apiError) {
-      return new ApiResponse<>(apiError.code(), status, apiError.message());
+      return new ApiResponse<>(apiError.code(), status, apiError.message(), null);
+    }
+    if (body instanceof PagedResult<?> paged) {
+      return new ApiResponse<>(SUCCESS_CODE, status, paged.items(), paged.paginationInfo());
     }
     if (statusCode >= 400) {
-      return new ApiResponse<>(ErrorCode.UNCLASSIFIED_ERROR.code(), status, body);
+      return new ApiResponse<>(ErrorCode.UNCLASSIFIED_ERROR.code(), status, body, null);
     }
-    return new ApiResponse<>(SUCCESS_CODE, status, body);
+    return new ApiResponse<>(SUCCESS_CODE, status, body, null);
   }
 
   private int resolveStatusCode(ServerHttpResponse response) {

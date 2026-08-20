@@ -186,14 +186,14 @@ list endpoint, without disturbing the shape of non-paginated responses.
 
 *Depends on Phase 10.*
 
-- [ ] `PaginationInfo` record (`page`, `size`, `totalElements`, `totalPages`) with a `from(Page<?>)` factory
-- [ ] `PagedResult<T>` record (`items`, `paginationInfo`) — the marker a controller returns for a paginated
+- [x] `PaginationInfo` record (`page`, `size`, `totalElements`, `totalPages`) with a `from(Page<?>)` factory
+- [x] `PagedResult<T>` record (`items`, `paginationInfo`) — the marker a controller returns for a paginated
       list, the same way `ApiError` marks an error
-- [ ] `ApiResponse` gains a `paginationInfo` field, omitted from the JSON body
+- [x] `ApiResponse` gains a `paginationInfo` field, omitted from the JSON body
       (`@JsonInclude(Include.NON_NULL)`) when absent, so every existing non-paginated response is unchanged
-- [ ] `ApiResponseBodyAdvice` recognizes `PagedResult`, unwrapping `items` into `data` and
+- [x] `ApiResponseBodyAdvice` recognizes `PagedResult`, unwrapping `items` into `data` and
       `paginationInfo` into the sibling field
-- [ ] Tests prove the shape both ways: a `PagedResult` body serializes with `data` as the item list and a
+- [x] Tests prove the shape both ways: a `PagedResult` body serializes with `data` as the item list and a
       populated `paginationInfo`; a plain (non-paged) body serializes with `paginationInfo` absent
       entirely, not `null` — exercised directly against `ApiResponseBodyAdvice`/`ApiResponse`, since no
       list endpoint exists yet to drive it end-to-end (the catalogue stays seeded-only per the mission's
