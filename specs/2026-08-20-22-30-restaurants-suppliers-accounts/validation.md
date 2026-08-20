@@ -43,19 +43,32 @@ Run against a fresh Liquibase-migrated database (`mvn spring-boot:run`, seed con
 
 5. Push an order past the 50% threshold on an ingredient and confirm the alert email's recipient is
    the seeded supplier's address, not `mohcufe@gmail.com`.
+   *Not run manually* — no live SMTP credentials in this environment. Covered instead by
+   `OrderServiceIntegrationTest.saveOrderEmail`, which asserts `emailService.sendEmail` is called
+   with `supplier@foodics-fresh-supply.test` (the seeded supplier's address, distinct from the old
+   constant).
+
+Steps 1–4 were run against `mvn spring-boot:run` on an in-memory H2 instance (`DB_URL=jdbc:h2:mem:manualtestdb`)
+with the seed context applied, and returned exactly the expected bodies:
+```
+1. {"code":"S000","status":"OK","data":true}
+2. {"code":"E0002","status":"Bad Request","data":"Validation failed"}
+3. {"code":"E0009","status":"Not Found","data":"Product(s) not found: 999"}
+4. {"code":"E0009","status":"Not Found","data":"Product(s) not found: 1"}
+```
 
 ## Merge criteria
 
-- [ ] The seeded data resolves to one restaurant owning both products, suppliers attached to all
-      four ingredients, and one user per role (roadmap exit criteria)
-- [ ] An order naming an unknown `productId` (or one that exists but belongs to a different
+- [x] The seeded data resolves to one restaurant owning both products, suppliers attached to all
+      four ingredients, and one user per role (roadmap exit criteria) — `SeedDataTest`
+- [x] An order naming an unknown `productId` (or one that exists but belongs to a different
       restaurant) is rejected with `ProductNotFoundException` instead of silently dropping it
-      (roadmap exit criteria)
-- [ ] Existing order tests still pass (roadmap exit criteria)
-- [ ] `mvn test` green
-- [ ] `db.changelog-master.yaml` includes both new changesets and a fresh database migrates cleanly
-- [ ] `specs/roadmap.md` Phase 12 checkboxes ticked once the above is true
-- [ ] No leftover reference to `MERCHANT_EMAIL` or the old `findByIdIn`/`getAllProductsByIdIn` call
+      (roadmap exit criteria) — `OrderServiceIntegrationTest`, manual steps 3–4
+- [x] Existing order tests still pass (roadmap exit criteria)
+- [x] `mvn test` green — 19/19 passing
+- [x] `db.changelog-master.yaml` includes both new changesets and a fresh database migrates cleanly
+- [x] `specs/roadmap.md` Phase 12 checkboxes ticked once the above is true
+- [x] No leftover reference to `MERCHANT_EMAIL` or the old `findByIdIn`/`getAllProductsByIdIn` call
       path
 
 ## Rollback
