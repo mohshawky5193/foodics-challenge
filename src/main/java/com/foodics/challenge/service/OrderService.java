@@ -37,7 +37,8 @@ public class OrderService {
     Map<Long,Integer> productIdToQuantityMap = orderRequest.products().stream().map(productRequest -> Map.entry(productRequest.productId(),productRequest.quantity())).collect(Collectors.toMap(
         Entry::getKey, Entry::getValue));
 
-    List<Product> productsOrdered = productService.getAllProductsByIdIn(productIds);
+    List<Product> productsOrdered = productService.getAllProductsByRestaurant(
+        orderRequest.restaurantId(), productIds);
 
     ingredientService.updateIngredientsStock(productsOrdered,productIdToQuantityMap);
 

@@ -2,6 +2,7 @@ package com.foodics.challenge.controlleradvice;
 
 import com.foodics.challenge.exception.ErrorCode;
 import com.foodics.challenge.exception.InsufficientIngredientsException;
+import com.foodics.challenge.exception.ProductNotFoundException;
 import com.foodics.challenge.model.response.ApiError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -28,6 +29,12 @@ public class FoodicsChallengeControllerAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ApiError handleInsufficientIngredients(InsufficientIngredientsException exception) {
     return new ApiError(ErrorCode.INSUFFICIENT_INGREDIENTS.code(), INSUFFICIENT_INGREDIENTS_MESSAGE);
+  }
+
+  @ExceptionHandler(ProductNotFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ApiError handleProductNotFound(ProductNotFoundException exception) {
+    return new ApiError(ErrorCode.PRODUCT_NOT_FOUND.code(), exception.getMessage());
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

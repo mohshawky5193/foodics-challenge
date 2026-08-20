@@ -18,7 +18,6 @@ public class IngredientService {
   private final EmailService emailService;
 
   private static final String INGREDIENTS_MISSING_SUBJECT = "Some Ingredients are needed";
-  private static final String MERCHANT_EMAIL = "mohcufe@gmail.com";
 
   private static final String MAIL_TEMPLATE = "We want to buy %s";
 
@@ -30,7 +29,7 @@ public class IngredientService {
 
   public void updateIngredientsStock(List<Product> products, Map<Long,Integer> productIdToQuantityMap){
     List<Ingredient> ingredients = new ArrayList<>();
-    List<String> ingredientsNearToGetOutOfStock = new ArrayList<>();
+    List<Ingredient> ingredientsNearToGetOutOfStock = new ArrayList<>();
     products.forEach(product -> product.getProductIngredients().forEach(productIngredient -> {
       Ingredient ingredient = productIngredient.getIngredient();
       int consumedAmount = ingredient.getConsumedAmountInGrams() == null ? 0:ingredient.getConsumedAmountInGrams();
@@ -40,31 +39,32 @@ public class IngredientService {
         throw new InsufficientIngredientsException();
       }
       if(consumedAmount <= ingredient.getAmountInGrams()*0.5 &&  calculatedConsumedAmount> ingredient.getAmountInGrams()*0.5){
-        ingredientsNearToGetOutOfStock.add(ingredient.getName());
+        ingredientsNearToGetOutOfStock.add(ingredient);
       }
       ingredient.setConsumedAmountInGrams(consumedAmount+productIngredient.getAmountInGrams()*productIdToQuantityMap.get(product.getId()));
     }));
     ingredientRepository.saveAll(ingredients);
 
     if(!ingredientsNearToGetOutOfStock.isEmpty()){
-      String messageToBeSent = createMessageToBeSent(ingredientsNearToGetOutOfStock);
-      emailService.sendEmail(INGREDIENTS_MISSING_SUBJECT,MERCHANT_EMAIL,messageToBeSent);
+      String messageToBeSent = createMessageToBeSent(ingredientsNearToGetOutOfStock.stream().map(Ingredient::getName).toList());
+      String supplierEmail = ingredientsNearToGetOutOfStock.get(0).getSupplier().getEmail();
+      emailService.sendEmail(INGREDIENTS_MISSING_SUBJECT,supplierEmail,messageToBeSent);
     }
   }
 
-  private String createMessageToBeSent(List<String> ingredientsNearToGetOutOfStock) {
-    if(ingredientsNearToGetOutOfStock.size() == 1){
-      return String.format(MAIL_TEMPLATE,ingredientsNearToGetOutOfStock.get(0));
+  private String createMessageToBeSent(List<String> ingredientNamesNearToGetOutOfStock) {
+    if(ingredientNamesNearToGetOutOfStock.size() == 1){
+      return String.format(MAIL_TEMPLATE,ingredientNamesNearToGetOutOfStock.get(0));
     }else {
       StringBuilder messageBuilder = new StringBuilder();
-      for(int i=0;i<ingredientsNearToGetOutOfStock.size()-1;i++){
-        messageBuilder.append(ingredientsNearToGetOutOfStock.get(i));
-        if(i != ingredientsNearToGetOutOfStock.size()-2){
+      for(int i=0;i<ingredientNamesNearToGetOutOfStock.size()-1;i++){
+        messageBuilder.append(ingredientNamesNearToGetOutOfStock.get(i));
+        if(i != ingredientNamesNearToGetOutOfStock.size()-2){
           messageBuilder.append(", ");
         }
       }
       messageBuilder.append(" and ");
-      messageBuilder.append(ingredientsNearToGetOutOfStock.get(ingredientsNearToGetOutOfStock.size()-1));
+      messageBuilder.append(ingredientNamesNearToGetOutOfStock.get(ingredientNamesNearToGetOutOfStock.size()-1));
       return String.format(MAIL_TEMPLATE,messageBuilder);
     }
   }

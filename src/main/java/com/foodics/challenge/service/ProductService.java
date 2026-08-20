@@ -1,5 +1,6 @@
 package com.foodics.challenge.service;
 
+import com.foodics.challenge.exception.ProductNotFoundException;
 import com.foodics.challenge.model.entity.Product;
 import com.foodics.challenge.repository.ProductRepository;
 import java.util.List;
@@ -17,7 +18,13 @@ public class ProductService {
     this.productRepository = productRepository;
   }
 
-  public List<Product> getAllProductsByIdIn(List<Long> productIds){
-    return productRepository.findByIdIn(productIds);
+  public List<Product> getAllProductsByRestaurant(Long restaurantId, List<Long> productIds) {
+    List<Product> products = productRepository.findByIdInAndRestaurantId(productIds, restaurantId);
+    List<Long> foundIds = products.stream().map(Product::getId).toList();
+    List<Long> missingIds = productIds.stream().filter(id -> !foundIds.contains(id)).toList();
+    if (!missingIds.isEmpty()) {
+      throw new ProductNotFoundException(missingIds);
+    }
+    return products;
   }
 }
