@@ -1,0 +1,140 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-create-restaurant-supplier-user-sequences
+      author: foodics
+      changes:
+        - createSequence:
+            sequenceName: restaurant_id_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: supplier_id_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: user_id_seq
+            startValue: 1
+            incrementBy: 50
+
+  - changeSet:
+      id: 012-create-restaurant-table
+      author: foodics
+      changes:
+        - createTable:
+            tableName: restaurant
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 013-create-supplier-table
+      author: foodics
+      changes:
+        - createTable:
+            tableName: supplier
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 014-create-app-user-table
+      author: foodics
+      changes:
+        - createTable:
+            tableName: app_user
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uc_app_user_email
+              - column:
+                  name: password_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: restaurant_id
+                  type: BIGINT
+              - column:
+                  name: supplier_id
+                  type: BIGINT
+        - addForeignKeyConstraint:
+            constraintName: fk_app_user_restaurant
+            baseTableName: app_user
+            baseColumnNames: restaurant_id
+            referencedTableName: restaurant
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            constraintName: fk_app_user_supplier
+            baseTableName: app_user
+            baseColumnNames: supplier_id
+            referencedTableName: supplier
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 015-add-restaurant-price-to-product
+      author: foodics
+      changes:
+        - addColumn:
+            tableName: product
+            columns:
+              - column:
+                  name: restaurant_id
+                  type: BIGINT
+              - column:
+                  name: price
+                  type: NUMERIC(10,2)
+        - addForeignKeyConstraint:
+            constraintName: fk_product_restaurant
+            baseTableName: product
+            baseColumnNames: restaurant_id
+            referencedTableName: restaurant
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 016-add-supplier-to-ingredient
+      author: foodics
+      changes:
+        - addColumn:
+            tableName: ingredient
+            columns:
+              - column:
+                  name: supplier_id
+                  type: BIGINT
+        - addForeignKeyConstraint:
+            constraintName: fk_ingredient_supplier
+            baseTableName: ingredient
+            baseColumnNames: supplier_id
+            referencedTableName: supplier
+            referencedColumnNames: id

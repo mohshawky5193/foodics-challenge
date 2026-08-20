@@ -5,3 +5,9 @@ databaseChangeLog:
   - include:
       file: changes/002-seed-catalogue-data.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changes/003-restaurants-suppliers-accounts-schema.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/004-seed-restaurant-supplier-accounts.yaml
+      relativeToChangelogFile: true

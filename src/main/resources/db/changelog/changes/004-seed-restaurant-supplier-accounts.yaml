@@ -1,0 +1,117 @@
+databaseChangeLog:
+  - changeSet:
+      id: 017-seed-restaurant
+      author: foodics
+      context: seed-data
+      changes:
+        - insert:
+            tableName: restaurant
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: name
+                  value: Foodics Burger House
+
+  - changeSet:
+      id: 018-seed-supplier
+      author: foodics
+      context: seed-data
+      changes:
+        - insert:
+            tableName: supplier
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: name
+                  value: Foodics Fresh Supply Co.
+              - column:
+                  name: email
+                  value: mohcufe@gmail.com
+
+  - changeSet:
+      id: 019-seed-accounts
+      author: foodics
+      context: seed-data
+      changes:
+        - insert:
+            tableName: app_user
+            columns:
+              - column: {name: id, valueNumeric: 1}
+              - column: {name: email, value: customer@foodics.test}
+              - column: {name: password_hash, value: "$2a$10$h3Avz5o13rBybGsA6URphewDHvdnjHuOI3cEHwa71zpp92vs1TFx6"}
+              - column: {name: role, value: CUSTOMER}
+        - insert:
+            tableName: app_user
+            columns:
+              - column: {name: id, valueNumeric: 2}
+              - column: {name: email, value: owner@foodics.test}
+              - column: {name: password_hash, value: "$2a$10$h3Avz5o13rBybGsA6URphewDHvdnjHuOI3cEHwa71zpp92vs1TFx6"}
+              - column: {name: role, value: RESTAURANT_OWNER}
+              - column: {name: restaurant_id, valueNumeric: 1}
+        - insert:
+            tableName: app_user
+            columns:
+              - column: {name: id, valueNumeric: 3}
+              - column: {name: email, value: supplier@foodics.test}
+              - column: {name: password_hash, value: "$2a$10$h3Avz5o13rBybGsA6URphewDHvdnjHuOI3cEHwa71zpp92vs1TFx6"}
+              - column: {name: role, value: SUPPLIER}
+              - column: {name: supplier_id, valueNumeric: 1}
+
+  - changeSet:
+      id: 020-backfill-product-restaurant-and-price
+      author: foodics
+      context: seed-data
+      changes:
+        - update:
+            tableName: product
+            columns:
+              - column: {name: restaurant_id, valueNumeric: 1}
+              - column: {name: price, valueNumeric: 8.50}
+            where: id = 1
+        - update:
+            tableName: product
+            columns:
+              - column: {name: restaurant_id, valueNumeric: 1}
+              - column: {name: price, valueNumeric: 8.50}
+            where: id = 2
+
+  - changeSet:
+      id: 021-backfill-ingredient-supplier
+      author: foodics
+      context: seed-data
+      changes:
+        - update:
+            tableName: ingredient
+            columns:
+              - column: {name: supplier_id, valueNumeric: 1}
+            where: id in (1, 2, 3, 4)
+
+  - changeSet:
+      id: 022-advance-restaurant-supplier-account-sequences
+      author: foodics
+      context: seed-data
+      changes:
+        - sql:
+            sql: ALTER SEQUENCE restaurant_id_seq RESTART WITH 51
+        - sql:
+            sql: ALTER SEQUENCE supplier_id_seq RESTART WITH 51
+        - sql:
+            sql: ALTER SEQUENCE user_id_seq RESTART WITH 51
+
+  - changeSet:
+      id: 023-enforce-product-restaurant-and-ingredient-supplier-not-null
+      author: foodics
+      context: seed-data
+      changes:
+        - addNotNullConstraint:
+            tableName: product
+            columnName: restaurant_id
+            columnDataType: BIGINT
+        - addNotNullConstraint:
+            tableName: ingredient
+            columnName: supplier_id
+            columnDataType: BIGINT

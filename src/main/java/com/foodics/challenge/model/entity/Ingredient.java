@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -26,6 +28,10 @@ public class Ingredient {
 
   @Column(name="CONSUMED_AMOUNT_IN_GRAMS",columnDefinition = "int default 0")
   private Integer consumedAmountInGrams;
+
+  @ManyToOne
+  @JoinColumn(name = "SUPPLIER_ID", nullable = false)
+  private Supplier supplier;
 
   @OneToMany(mappedBy = "ingredient")
   private List<ProductIngredient> productIngredients;
@@ -69,5 +75,13 @@ public class Ingredient {
 
   public void setConsumedAmountInGrams(Integer consumedAmountInGrams) {
     this.consumedAmountInGrams = consumedAmountInGrams;
+  }
+
+  public Supplier getSupplier() {
+    return supplier;
+  }
+
+  public void setSupplier(Supplier supplier) {
+    this.supplier = supplier;
   }
 }
