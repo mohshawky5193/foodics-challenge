@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.foodics.challenge.exception.InsufficientIngredientsException;
+import com.foodics.challenge.exception.ProductNotFoundException;
 import com.foodics.challenge.model.entity.Ingredient;
 import com.foodics.challenge.model.request.OrderRequest;
 import com.foodics.challenge.repository.IngredientRepository;
@@ -62,7 +64,7 @@ public class OrderServiceIntegrationTest {
 
     orderService.order(orderRequest);
 
-    verify(emailService).sendEmail(anyString(),anyString(),anyString());
+    verify(emailService).sendEmail(anyString(),eq("supplier@foodics-fresh-supply.test"),anyString());
 
     assertEquals(orderRepository.findAll().size(),1);
 
@@ -78,6 +80,27 @@ public class OrderServiceIntegrationTest {
     assertThrows(InsufficientIngredientsException.class, () -> orderService.order(orderRequest));
 
     verify(emailService,never()).sendEmail(anyString(),anyString(),anyString());
+  }
+
+  @Test
+  void rejectOrderWithUnknownProductId(){
+    OrderRequest orderRequest = OrderRequestUtils.orderRequestUnknownProduct();
+
+    ProductNotFoundException exception = assertThrows(ProductNotFoundException.class,
+        () -> orderService.order(orderRequest));
+
+    assertEquals(List.of(999L), exception.getMissingProductIds());
+    verify(emailService,never()).sendEmail(anyString(),anyString(),anyString());
+  }
+
+  @Test
+  void rejectOrderWithProductFromAnotherRestaurant(){
+    OrderRequest orderRequest = OrderRequestUtils.orderRequestUnknownRestaurant();
+
+    ProductNotFoundException exception = assertThrows(ProductNotFoundException.class,
+        () -> orderService.order(orderRequest));
+
+    assertEquals(List.of(1L), exception.getMissingProductIds());
   }
 
   @Test

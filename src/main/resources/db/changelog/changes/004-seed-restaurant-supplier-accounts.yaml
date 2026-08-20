@@ -30,7 +30,7 @@ databaseChangeLog:
                   value: Foodics Fresh Supply Co.
               - column:
                   name: email
-                  value: mohcufe@gmail.com
+                  value: supplier@foodics-fresh-supply.test
 
   - changeSet:
       id: 019-seed-accounts
