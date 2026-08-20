@@ -1,0 +1,148 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-id-sequences
+      author: foodics
+      changes:
+        - createSequence:
+            sequenceName: product_id_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: ingredient_id_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: order_id_seq
+            startValue: 1
+            incrementBy: 50
+
+  - changeSet:
+      id: 002-create-product-table
+      author: foodics
+      changes:
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 003-create-ingredient-table
+      author: foodics
+      changes:
+        - createTable:
+            tableName: ingredient
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: amount_in_grams
+                  type: INT
+              - column:
+                  name: consumed_amount_in_grams
+                  type: INT
+
+  - changeSet:
+      id: 004-create-order-data-table
+      author: foodics
+      changes:
+        - createTable:
+            tableName: order_data
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 005-create-product-ingredient-table
+      author: foodics
+      changes:
+        - createTable:
+            tableName: product_ingredient
+            columns:
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ingredient_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount_in_grams
+                  type: INT
+        - addPrimaryKey:
+            tableName: product_ingredient
+            columnNames: product_id, ingredient_id
+            constraintName: pk_product_ingredient
+        - addForeignKeyConstraint:
+            constraintName: fk_product_ingredient_product
+            baseTableName: product_ingredient
+            baseColumnNames: product_id
+            referencedTableName: product
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            constraintName: fk_product_ingredient_ingredient
+            baseTableName: product_ingredient
+            baseColumnNames: ingredient_id
+            referencedTableName: ingredient
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 006-create-order-detail-table
+      author: foodics
+      changes:
+        - createTable:
+            tableName: order_detail
+            columns:
+              - column:
+                  name: order_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INT
+        - addPrimaryKey:
+            tableName: order_detail
+            columnNames: order_id, product_id
+            constraintName: pk_order_detail
+        - addForeignKeyConstraint:
+            constraintName: fk_order_detail_order
+            baseTableName: order_detail
+            baseColumnNames: order_id
+            referencedTableName: order_data
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            constraintName: fk_order_detail_product
+            baseTableName: order_detail
+            baseColumnNames: product_id
+            referencedTableName: product
+            referencedColumnNames: id
