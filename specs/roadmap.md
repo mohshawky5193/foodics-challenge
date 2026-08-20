@@ -216,10 +216,18 @@ today's three-field shape.
 - [ ] `User` entity with a unique email, a hashed password, and a `Role` — `CUSTOMER`, `RESTAURANT_OWNER`,
       or `SUPPLIER`
 - [ ] Ownership links: a `RESTAURANT_OWNER` user to their `Restaurant`, a `SUPPLIER` user to their `Supplier`
+- [ ] `OrderRequest` gains a `restaurantId`, so `OrderController`/`POST /order` places the order against
+      one restaurant's menu instead of resolving products globally
+- [ ] `ProductNotFoundException` — a new exception thrown when a requested `productId` doesn't resolve to
+      a product on that restaurant's menu, naming the missing id(s); mapped through
+      `FoodicsChallengeControllerAdvice` with its own numbered `ErrorCode`, per Phase 10's envelope,
+      instead of `OrderService` silently proceeding with whichever subset `findByIdIn` happened to return
 - [ ] Liquibase changesets for every new table and column, plus backfill for the seeded catalogue
 
 **Exit criteria.** The seeded data resolves to one restaurant owning both products, suppliers attached to all
-four ingredients, and one user per role; existing order tests still pass.
+four ingredients, and one user per role; an order naming an unknown `productId` (or one that exists but
+belongs to a different restaurant) is rejected with `ProductNotFoundException` instead of silently
+dropping it; existing order tests still pass.
 
 ## Phase 13 — JWT authentication
 
