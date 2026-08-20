@@ -1,1 +1,130 @@
-databaseChangeLog: []
+databaseChangeLog:
+  - changeSet:
+      id: 007-seed-products
+      author: foodics
+      context: seed-data
+      changes:
+        - insert:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: name
+                  value: Burger
+        - insert:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: name
+                  value: Chicken Burger
+
+  - changeSet:
+      id: 008-seed-ingredients
+      author: foodics
+      context: seed-data
+      changes:
+        - insert:
+            tableName: ingredient
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: name
+                  value: Beef
+              - column:
+                  name: amount_in_grams
+                  valueNumeric: 20000
+        - insert:
+            tableName: ingredient
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: name
+                  value: Chicken
+              - column:
+                  name: amount_in_grams
+                  valueNumeric: 20000
+        - insert:
+            tableName: ingredient
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 3
+              - column:
+                  name: name
+                  value: Cheese
+              - column:
+                  name: amount_in_grams
+                  valueNumeric: 5000
+        - insert:
+            tableName: ingredient
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 4
+              - column:
+                  name: name
+                  value: Onion
+              - column:
+                  name: amount_in_grams
+                  valueNumeric: 1000
+
+  - changeSet:
+      id: 009-seed-product-ingredients
+      author: foodics
+      context: seed-data
+      changes:
+        - insert:
+            tableName: product_ingredient
+            columns:
+              - column: {name: product_id, valueNumeric: 1}
+              - column: {name: ingredient_id, valueNumeric: 1}
+              - column: {name: amount_in_grams, valueNumeric: 150}
+        - insert:
+            tableName: product_ingredient
+            columns:
+              - column: {name: product_id, valueNumeric: 1}
+              - column: {name: ingredient_id, valueNumeric: 3}
+              - column: {name: amount_in_grams, valueNumeric: 30}
+        - insert:
+            tableName: product_ingredient
+            columns:
+              - column: {name: product_id, valueNumeric: 1}
+              - column: {name: ingredient_id, valueNumeric: 4}
+              - column: {name: amount_in_grams, valueNumeric: 20}
+        - insert:
+            tableName: product_ingredient
+            columns:
+              - column: {name: product_id, valueNumeric: 2}
+              - column: {name: ingredient_id, valueNumeric: 2}
+              - column: {name: amount_in_grams, valueNumeric: 150}
+        - insert:
+            tableName: product_ingredient
+            columns:
+              - column: {name: product_id, valueNumeric: 2}
+              - column: {name: ingredient_id, valueNumeric: 3}
+              - column: {name: amount_in_grams, valueNumeric: 30}
+        - insert:
+            tableName: product_ingredient
+            columns:
+              - column: {name: product_id, valueNumeric: 2}
+              - column: {name: ingredient_id, valueNumeric: 4}
+              - column: {name: amount_in_grams, valueNumeric: 20}
+
+  - changeSet:
+      id: 010-advance-catalogue-sequences
+      author: foodics
+      context: seed-data
+      changes:
+        - sql:
+            sql: ALTER SEQUENCE product_id_seq RESTART WITH 51
+        - sql:
+            sql: ALTER SEQUENCE ingredient_id_seq RESTART WITH 51

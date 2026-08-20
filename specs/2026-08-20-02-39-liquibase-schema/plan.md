@@ -21,16 +21,16 @@
 
 ## 2. Move seed data into a changeset
 *Depends on 1.*
-- [ ] Fill in `changes/002-seed-catalogue-data.yaml`: `insert` changeSets (context `seed-data`) for the
+- [x] Fill in `changes/002-seed-catalogue-data.yaml`: `insert` changeSets (context `seed-data`) for the
       two `product` rows (`id: 1` Burger, `id: 2` Chicken Burger), four `ingredient` rows (`id: 1` Beef
       20000g, `id: 2` Chicken 20000g, `id: 3` Cheese 5000g, `id: 4` Onion 1000g — `consumed_amount_in_grams`
       omitted so it inserts as `NULL`), and six `product_ingredient` rows (burger→beef 150g, burger→cheese
       30g, burger→onion 20g, chicken burger→chicken 150g, chicken burger→cheese 30g, chicken
       burger→onion 20g)
-- [ ] Add a `sql` changeSet (context `seed-data`) restarting `product_id_seq` and `ingredient_id_seq` at
+- [x] Add a `sql` changeSet (context `seed-data`) restarting `product_id_seq` and `ingredient_id_seq` at
       51, after the inserts
-- [ ] Delete `src/main/java/com/foodics/challenge/config/DatabaseInitializer.java`
-- [ ] Remove `DatabaseInitializer.class` from `OrderServiceIntegrationTest`'s `@Import` and delete the
+- [x] Delete `src/main/java/com/foodics/challenge/config/DatabaseInitializer.java`
+- [x] Remove `DatabaseInitializer.class` from `OrderServiceIntegrationTest`'s `@Import` and delete the
       now-unused `import com.foodics.challenge.config.DatabaseInitializer;`
 
 ## 3. Verify

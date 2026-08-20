@@ -8,7 +8,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.foodics.challenge.config.DatabaseInitializer;
 import com.foodics.challenge.exception.InsufficientIngredientsException;
 import com.foodics.challenge.model.entity.Ingredient;
 import com.foodics.challenge.model.request.OrderRequest;
@@ -23,7 +22,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @DataJpaTest
-@Import(value = {OrderService.class, DatabaseInitializer.class,ProductService.class,IngredientService.class})
+@Import(value = {OrderService.class, ProductService.class,IngredientService.class})
 public class OrderServiceIntegrationTest {
 
 
