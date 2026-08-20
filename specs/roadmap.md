@@ -142,14 +142,14 @@ and run the app in a fresh environment.
 
 *Depends on Phase 8.*
 
-- [ ] `liquibase-core` added and `spring.liquibase` configured
-- [ ] `db/changelog/db.changelog-master.yaml` plus one changelog per change, starting with a baseline
+- [x] `liquibase-core` added and `spring.liquibase` configured
+- [x] `db/changelog/db.changelog-master.yaml` plus one changelog per change, starting with a baseline
       changeset capturing today's tables, sequences, and constraints
-- [ ] `ddl-auto` changed from `create-drop` to `validate`, so Hibernate checks the migrated schema rather
+- [x] `ddl-auto` changed from `create-drop` to `validate`, so Hibernate checks the migrated schema rather
       than creating it
-- [ ] Seed data moved from `DatabaseInitializer` into a changeset with a context, so reference data is
+- [x] Seed data moved from `DatabaseInitializer` into a changeset with a context, so reference data is
       versioned too and no longer disappears on shutdown
-- [ ] Tests run the same changelog against H2, so migrations are exercised on every build
+- [x] Tests run the same changelog against H2, so migrations are exercised on every build
 
 **Exit criteria.** A fresh database is built entirely by Liquibase, a second start is a no-op, `validate`
 finds no drift, and `mvn test` passes against the migrated H2 schema.

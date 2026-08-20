@@ -35,8 +35,12 @@
 
 ## 3. Verify
 *Depends on 1, 2.*
-- [ ] `mvn clean verify` passes — Hibernate's `validate` accepts the Liquibase-built H2 schema, and the
+- [x] `mvn clean verify` passes — Hibernate's `validate` accepts the Liquibase-built H2 schema, and the
       existing `OrderServiceIntegrationTest`/`OrderControllerTest`/`FoodicsCodingChallengeApplicationTests`
       assertions (including the exact-3-non-null-ingredients check) still hold against Liquibase-seeded
       data
-- [ ] Confirm no `DatabaseInitializer` reference remains (`grep -rn DatabaseInitializer src`)
+- [x] Confirm no `DatabaseInitializer` reference remains (`grep -rn DatabaseInitializer src`)
+- [x] Manual: two `mvn spring-boot:run` boots against a persistent `jdbc:h2:file:` database — first run
+      applies all 10 changeSets and starts cleanly; second run logs "Database is up to date, no
+      changesets to execute" (Run: 0, Previously run: 10) and still starts cleanly, proving the second
+      start is a no-op and `validate` finds no drift on a pre-migrated database

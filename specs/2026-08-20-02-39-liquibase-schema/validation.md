@@ -16,21 +16,25 @@
 
 ## Manual
 
-- Point the app at a **persistent** H2 file URL (e.g. `DB_URL=jdbc:h2:file:./target/liquibase-check`)
-  or a local Postgres, run `mvn spring-boot:run`, stop it, and start it again. Second start must log
-  Liquibase skipping every changeSet (`already executed`) and Hibernate's `validate` must still pass —
-  demonstrating "a fresh database is built entirely by Liquibase" and "a second start is a no-op"
-  together, which a fresh-per-run in-memory H2 test can't demonstrate on its own.
-- Query `product`/`ingredient`/`product_ingredient` after the first start and confirm the seeded rows
-  and ids match `DatabaseInitializer`'s old output (Burger=1, Chicken Burger=2, Beef=1, Chicken=2,
-  Cheese=3, Onion=4).
+- Point the app at a **persistent** H2 file URL (`DB_URL=jdbc:h2:file:./target/liquibase-check`), run
+  `mvn spring-boot:run`, stop it, and start it again. **Done** — first run applied all 10 changeSets
+  (`New row inserted into product` ×2, `ingredient` ×4, `product_ingredient` ×6, plus the two
+  `ALTER SEQUENCE` changes) and started cleanly (`Started FoodicsCodingChallengeApplication`); second
+  run logged `Database is up to date, no changesets to execute` (`Run: 0, Previously run: 10`) and
+  still started cleanly — Hibernate's `validate` accepted the pre-existing schema unchanged. Confirms
+  "a fresh database is built entirely by Liquibase" and "a second start is a no-op" together, which the
+  fresh-per-test-run in-memory H2 instance can't demonstrate on its own.
+- Seeded row ids were not independently queried via a SQL client — the changelog's `insert` changes
+  assign `id: 1`/`2`/etc. literally (visible directly in `002-seed-catalogue-data.yaml`), and Liquibase
+  logged a successful `New row inserted` for each, so this was accepted as sufficient without a second
+  query round-trip.
 
 ## Merge criteria
 
-- [ ] `mvn test` passes against the migrated H2 schema
-- [ ] A fresh database is built entirely by Liquibase (no `DatabaseInitializer`, no `ddl-auto: create`)
-- [ ] A second start against the same database is a no-op (manual check above)
-- [ ] `validate` finds no drift (`mvn clean verify` / `spring-boot:run` boots without a
+- [x] `mvn test` passes against the migrated H2 schema
+- [x] A fresh database is built entirely by Liquibase (no `DatabaseInitializer`, no `ddl-auto: create`)
+- [x] A second start against the same database is a no-op (manual check above)
+- [x] `validate` finds no drift (`mvn clean verify` / `spring-boot:run` boots without a
       `SchemaManagementException`)
 
 ## Rollback
