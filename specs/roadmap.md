@@ -154,11 +154,36 @@ and run the app in a fresh environment.
 **Exit criteria.** A fresh database is built entirely by Liquibase, a second start is a no-op, `validate`
 finds no drift, and `mvn test` passes against the migrated H2 schema.
 
-## Phase 10 — Restaurants, suppliers, and accounts
+## Phase 10 — Global response envelope
+
+**Goal.** Every response — success or error — carries a consistent envelope, and controllers stop
+constructing `ResponseEntity` by hand.
+
+*Depends on Phase 9.*
+
+- [ ] Controller methods return their domain object directly (`OrderController.order` returns `Boolean`,
+      not `ResponseEntity<Boolean>`); no `ResponseEntity` remains anywhere under `controller` or
+      `controlleradvice`
+- [ ] `FoodicsChallengeControllerAdvice` becomes `@RestControllerAdvice`; its handlers use `@ResponseStatus`
+      and return the error payload directly instead of building a `ResponseEntity`
+- [ ] Every exception the API can currently produce gets its own handler and a stable numbered code —
+      `InsufficientIngredientsException`, bean-validation failures, a malformed request body, a
+      type-mismatched parameter, an unmapped route, an unsupported HTTP method, and an uncaught
+      exception — numbered `E0001`…`E000N` in the order they're declared
+- [ ] A global `ResponseBodyAdvice<Object>` wraps every response body: success gets `code: "S000"` and the
+      original return value under `data`; an error gets its handler's `E000N` code and its message under
+      `data`; both carry the HTTP status reason phrase (e.g. `"OK"`, `"Bad Request"`) alongside `code`
+- [ ] Existing controller/integration tests updated for the new envelope shape; new tests cover a success
+      response and at least one of each numbered error
+
+**Exit criteria.** `POST /order` returns `{"code":"S000","status":"OK","data":true}` on success; each
+mapped error returns its own `E000N` code with the matching HTTP status; `mvn test` passes.
+
+## Phase 11 — Restaurants, suppliers, and accounts
 
 **Goal.** The domain knows who owns a menu, who supplies an ingredient, and who is ordering.
 
-*Depends on Phase 9.*
+*Depends on Phase 10.*
 
 - [ ] `Restaurant` entity; `Product` gains a `restaurant` reference and a `price`, so a product belongs to
       exactly one menu
@@ -172,11 +197,11 @@ finds no drift, and `mvn test` passes against the migrated H2 schema.
 **Exit criteria.** The seeded data resolves to one restaurant owning both products, suppliers attached to all
 four ingredients, and one user per role; existing order tests still pass.
 
-## Phase 11 — JWT authentication
+## Phase 12 — JWT authentication
 
 **Goal.** A caller can prove who they are.
 
-*Depends on Phase 10.*
+*Depends on Phase 11.*
 
 - [ ] `spring-boot-starter-security` and `spring-boot-starter-oauth2-resource-server` added
 - [ ] `POST /auth/login` taking email and password, returning a signed JWT carrying the subject and role
@@ -189,11 +214,11 @@ four ingredients, and one user per role; existing order tests still pass.
 **Exit criteria.** Valid credentials return a token that a protected endpoint accepts; a wrong password, a
 tampered signature, and an expired token are each rejected with `401`, covered by tests.
 
-## Phase 12 — Role-based authorization
+## Phase 13 — Role-based authorization
 
 **Goal.** Every endpoint is reachable only by the roles that should reach it, and only for their own data.
 
-*Depends on Phase 11.*
+*Depends on Phase 12.*
 
 - [ ] Endpoints locked down by default — anything not explicitly permitted requires authentication
 - [ ] `POST /order` restricted to `CUSTOMER`, with the order attributed to the authenticated user
@@ -209,11 +234,11 @@ tampered signature, and an expired token are each rejected with `401`, covered b
 **Exit criteria.** A test per role proves both the allowed call succeeds and the forbidden one returns `403`,
 including the cross-tenant case where the role is right and the owner is wrong.
 
-## Phase 13 — Supplier low-stock notifications
+## Phase 14 — Supplier low-stock notifications
 
 **Goal.** The alert reaches the supplier who can actually restock the ingredient.
 
-*Depends on Phase 12.*
+*Depends on Phase 13.*
 
 - [ ] 50%-threshold detection reused, but the recipient resolved from `Ingredient.supplier` instead of the
       hard-coded constant
@@ -226,11 +251,11 @@ including the cross-tenant case where the role is right and the owner is wrong.
 **Exit criteria.** An order depleting ingredients from two suppliers sends exactly two emails, each listing
 only that supplier's ingredients, and a second order past the same threshold sends none.
 
-## Phase 14 — Restaurant menu endpoint
+## Phase 15 — Restaurant menu endpoint
 
 **Goal.** A client can read what a restaurant sells before ordering it.
 
-*Depends on Phase 13.*
+*Depends on Phase 14.*
 
 - [ ] `GET /restaurants/{restaurantId}/menu` returning the restaurant's products with id, name, and price
 - [ ] Availability per item, derived from whether the recipe can still be covered by remaining ingredient
@@ -247,11 +272,11 @@ only that supplier's ingredients, and a second order past the same threshold sen
 unavailable once its ingredients cannot cover one unit, and the response is produced without a query per
 product.
 
-## Phase 15 — Email delivery off a personal account
+## Phase 16 — Email delivery off a personal account
 
 **Goal.** Alerts leave the application without anyone lending it a Gmail app password.
 
-*Depends on Phase 13.*
+*Depends on Phase 14.*
 
 The alternatives were surveyed in July 2026: Amazon SES ($0.10/1,000, cheapest at scale, most setup),
 Postmark (from ~$15/mo, best deliverability), Resend (3,000/mo free, ~$20 for 50k), Brevo (300/day,
@@ -272,7 +297,7 @@ project ever becomes real.
 - [ ] Local development pointed at a mail catcher (Mailpit) so nothing leaves the machine
 - [ ] Tests pointed at an in-memory SMTP server (GreenMail) or a stubbed `EmailSender`, so the suite
       neither reaches the network nor needs an API key
-- [ ] `MERCHANT_EMAIL`'s replacement from Phase 13 unaffected; recipients still come from the supplier
+- [ ] `MERCHANT_EMAIL`'s replacement from Phase 14 unaffected; recipients still come from the supplier
 
 **Deliberately not in this phase.** Delivery stays `@Async` fire-and-forget. No outbox table, no retry, no
 broker. A send that fails is logged and lost, and that is accepted: the surveyed alternative — writing the
